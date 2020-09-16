@@ -33,7 +33,7 @@ def juego_Casa(manoJ, manoC, mazo):
     print("La Casa tiene: " + str(manoC) + " (" + str(contar(manoC)) + " puntos)")
     
     if (contar(manoC) < contar(manoJ)):
-        juego_Casa(manoJ, manoC + [mazo[0]], mazo[1:])
+        juego_Casa(manoJ, manoC + [mazo.pop()], mazo)
     
     elif (contar(manoC) >= contar(manoJ) and contar(manoC) <= 21):
         print("La Casa gana")
