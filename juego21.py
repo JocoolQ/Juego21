@@ -1,68 +1,72 @@
 from random import sample
 
-def contar(lista):
-    if(len(lista)<=0):
-        return 0
-    if(contador(lista)>11):
-        return contador(lista)
-    else:
-        for i in lista:
-            if i[0] == 'J' or  i[0] == 'K' or  i[0] == 'Q':
-                return 10+contar(lista[1:])
-            elif i[0] == 'A':            
-                return contador(lista)+10
-            else:
-                return i[0]+contar(lista[1:])
+def creador_baraja():
+    return sample([(x,y) for x in ['A',2,3,4,5,6,7,8,9,10,'J','Q','K'] for y in ['DIAMANTES','TREBOLES','PICAS','CORAZONES']], 52)    
 
-def contador(lista):
-    if(len(lista)==0):
+def contar(mano):
+    if(validar_as(mano) and contador(mano) <= 11):
+        return contador(mano) + 10
+    else:
+        return contador(mano)
+
+def contador(mano):
+    if len(mano) == 0:
         return 0
     else:
-        for i in lista:
-            if(i[0]=='J' or i[0]=='Q' or i[0]=='K'):
-                return contador(lista[1:])+10
-            if(i[0]=='A'):
-                return contador(lista[1:])+1
+        for i in mano:
+            if i[0] in ['J','Q','K']:
+                return contador(mano[1:]) + 10
+            if i[0] == 'A':
+                return contador(mano[1:]) + 1
             else:
-                return contador(lista[1:])+i[0]
+                return contador(mano[1:]) + i[0]
 
-def creadorbaraja():
-    return sample([(x,y)for x in ['A',2,3,4,5,6,7,8,9,10,'J','Q','K']for y in ['DIAMANTES','TREBOLES','PICAS','CORAZONES']], 52)    
+def validar_as(mano):
+    if mano == []:
+        return False
+    if mano[0][0] == 'A':
+        return True
+    return validar_as(mano[1:])
 
-def juego(listaJ, listaC, lista):
-    print(listaJ)
-    if(len(listaJ)==0 and len(listaC)==0):
-        repartirIni(listaJ, listaC, lista)
-        return "Fin del Juego"
-    elif(input("Desa continuar: (Digite N para no)")!='N'):
-        print("Casa "+str(listaC[0])+" ?")
-        if(contar(listaJ)<=21):
-            return repartirIni(listaJ,listaC,lista)
-        else:
-            return print("Perdio usted tiene: "+str(contar(listaJ)))
-    elif(contar(listaJ)>21):
-        return print("Perdio usted tiene: "+str(contar(listaJ)))
-    elif(contar(listaJ)<=21):
-        print("Tiene: "+str(contar(listaJ)))
-        return juegoCasa(listaJ,listaC,lista)
+
+def juego_Casa(manoJ, manoC, mazo):
+    print("La Casa tiene: " + str(manoC))
+    
+    if (contar(manoC) < contar(manoJ)):
+        juego_Casa(manoJ, manoC + [mazo[0]], mazo[1:])
+    
+    elif (contar(manoC) >= contar(manoJ) and contar(manoC) <= 21):
+        print("La Casa gana")
+
+    else:
+        print("¡Felicidades ha ganado!")
+
+def repartir(manoJ, manoC, mazo):
+    if manoJ == [] and manoC == []:
+        juego(manoJ + [mazo[0]] + [mazo[1]], manoC + [mazo[2]] + [mazo[3]], mazo[4:])
+    else:
+        juego(manoJ + [mazo[0]], manoC, mazo[1:])
+
+def juego(manoJ, manoC, mazo):
+    if (manoJ != [] and manoC != []):
+        print("Su mano: " + str(manoJ))
+        print("Casa: " + str(manoC[0]) + " ?")
+      
+    if (manoJ == [] and manoC == []):
+        repartir(manoJ, manoC, mazo)
         
-def juegoCasa(listaJ,listaC,lista):
-    print("La Casa tiene"+str(listaC))
-    if(contar(listaC)<contar(listaJ)):
-        return repartirIni2(listaJ,listaC,lista)
-    elif(contar(listaC)>=contar(listaJ) and contar(listaC)<=21):
-        return print("La Casa Gana")
-    else:
-        return print("Felicidades Ganaste, ¡Exitos!")
+    elif(input("Desea continuar: (Digite N para no)") != 'N'):
+        
+        if contar(manoJ) <= 21:
+            repartir(manoJ, manoC, mazo)
+        else:
+            print("Perdió, usted tiene: " + str(contar(manoJ)))
 
+    elif contar(manoJ) > 21:
+        print("Perdió, usted tiene: " + str(contar(manoJ))  + " puntos")
 
-def repartirIni(listaJ, listaC, lista):
-    if (len(lista)==52):
-        return juego(listaJ+[lista[0]]+[lista[1]],listaC+[lista[2]]+[lista[3]],lista[4:])
-    else:
-        return juego(listaJ+[lista[0]],listaC,lista[1:])
-
-def repartirIni2(listaJ, listaC, lista):
-    return juegoCasa(listaJ,listaC+[lista[0]],lista[1:])
-
-juego([],[],creadorbaraja())
+    elif contar(manoJ) <= 21:
+        print("Tiene: " + str(contar(manoJ)) + " puntos")
+        juego_Casa(manoJ, manoC, mazo)
+        
+juego([], [], creador_baraja())
