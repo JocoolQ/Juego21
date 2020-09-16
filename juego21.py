@@ -13,13 +13,13 @@ def contador(mano):
     if len(mano) == 0:
         return 0
     else:
-        for i in mano:
-            if i[0] in ['J','Q','K']:
+        for carta in mano:
+            if carta[0] in ['J','Q','K']:
                 return contador(mano[1:]) + 10
-            if i[0] == 'A':
+            if carta[0] == 'A':
                 return contador(mano[1:]) + 1
             else:
-                return contador(mano[1:]) + i[0]
+                return contador(mano[1:]) + carta[0]
 
 def validar_as(mano):
     if mano == []:
@@ -30,7 +30,7 @@ def validar_as(mano):
 
 
 def juego_Casa(manoJ, manoC, mazo):
-    print("La Casa tiene: " + str(manoC))
+    print("La Casa tiene: " + str(manoC) + " (" + str(contar(manoC)) + " puntos)")
     
     if (contar(manoC) < contar(manoJ)):
         juego_Casa(manoJ, manoC + [mazo[0]], mazo[1:])
@@ -42,31 +42,27 @@ def juego_Casa(manoJ, manoC, mazo):
         print("¡Felicidades ha ganado!")
 
 def repartir(manoJ, manoC, mazo):
-    if manoJ == [] and manoC == []:
-        juego(manoJ + [mazo[0]] + [mazo[1]], manoC + [mazo[2]] + [mazo[3]], mazo[4:])
+    if (manoJ == [] and manoC == []):
+        juego(manoJ + [mazo.pop()] + [mazo.pop()], manoC + [mazo.pop()] + [mazo.pop()], mazo)
     else:
-        juego(manoJ + [mazo[0]], manoC, mazo[1:])
+        juego(manoJ + [mazo.pop()], manoC, mazo)
 
 def juego(manoJ, manoC, mazo):
     if (manoJ != [] and manoC != []):
-        print("Su mano: " + str(manoJ))
+        print("Su mano: " + str(manoJ) + " (" + str(contar(manoJ)) + " puntos)")
+        
         print("Casa: " + str(manoC[0]) + " ?")
       
     if (manoJ == [] and manoC == []):
         repartir(manoJ, manoC, mazo)
         
-    elif(input("Desea continuar: (Digite N para no)") != 'N'):
-        
-        if contar(manoJ) <= 21:
-            repartir(manoJ, manoC, mazo)
-        else:
-            print("Perdió, usted tiene: " + str(contar(manoJ)))
-
     elif contar(manoJ) > 21:
-        print("Perdió, usted tiene: " + str(contar(manoJ))  + " puntos")
+        print("Perdió, usted tiene: " + str(contar(manoJ)) + " puntos")
+        
+    elif (input("Desea continuar: (Digite N para no)") != 'N'):
+        repartir(manoJ, manoC, mazo)
 
     elif contar(manoJ) <= 21:
-        print("Tiene: " + str(contar(manoJ)) + " puntos")
         juego_Casa(manoJ, manoC, mazo)
         
 juego([], [], creador_baraja())
